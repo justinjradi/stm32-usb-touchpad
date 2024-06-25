@@ -56,7 +56,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+void input_test(void);
 /* USER CODE END PFP */
 
 /*

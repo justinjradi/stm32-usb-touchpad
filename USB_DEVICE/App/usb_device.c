@@ -32,7 +32,16 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+typedef struct __attribute__((packed))
+{
+	uint8_t report_ID;
+	uint8_t left_button : 1;
+	uint8_t middle_button : 1;
+	uint8_t right_button : 1;
+	uint8_t padding : 5;
+	uint8_t x;
+	uint8_t y;
+} MouseReport;
 /* USER CODE END PV */
 
 /* USER CODE BEGIN PFP */
@@ -54,6 +63,12 @@ USBD_HandleTypeDef hUsbDeviceFS;
  * -- Insert your external function declaration here --
  */
 /* USER CODE BEGIN 1 */
+void input_test(void)
+{
+	MouseReport mouseReport = {0};
+	mouseReport.report_ID = 1;
+	int result = USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *) &mouseReport, sizeof (mouseReport));
+}
 
 /* USER CODE END 1 */
 

@@ -89,13 +89,31 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-
+  int user_button_pressed;
+  uint8_t message;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+  	message = get_message();
+
+			if (HAL_GPIO_ReadPin(USER_BUTTON_GPIO_Port, USER_BUTTON_Pin))
+			{
+				user_button_pressed = 1;
+			}
+			else if (user_button_pressed)
+			{
+				HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET);
+				HAL_Delay(250);
+				HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET);
+				user_button_pressed = 0;
+
+				input_test();
+				HAL_Delay(250);
+			}
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

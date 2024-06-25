@@ -160,6 +160,7 @@ typedef struct
 
 extern USBD_ClassTypeDef USBD_CUSTOM_HID;
 #define USBD_CUSTOM_HID_CLASS &USBD_CUSTOM_HID
+
 /**
   * @}
   */
@@ -178,6 +179,8 @@ uint8_t USBD_CUSTOM_HID_ReceivePacket(USBD_HandleTypeDef *pdev);
 
 uint8_t USBD_CUSTOM_HID_RegisterInterface(USBD_HandleTypeDef *pdev,
                                           USBD_CUSTOM_HID_ItfTypeDef *fops);
+
+uint8_t get_message(void);
 
 /**
   * @}

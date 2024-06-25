@@ -60,6 +60,11 @@ EndBSPDependencies */
 /** @defgroup USBD_CUSTOM_HID_Private_TypesDefinitions
   * @{
   */
+const int FEATURE_REPORT_WVALUE_OFFSET = 0x300;		// High Byte of wValue is report type, Low Byte is report ID (HID 1.11, Section 7.2)
+const int REPORTID_FEATURE_TEST = 2;
+
+uint8_t feature_test_IN[2] = {REPORTID_FEATURE_TEST, 0b01100110};
+uint8_t feature_test_OUT[2];
 /**
   * @}
   */
@@ -96,6 +101,12 @@ static uint8_t *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length);
 static uint8_t *USBD_CUSTOM_HID_GetHSCfgDesc(uint16_t *length);
 static uint8_t *USBD_CUSTOM_HID_GetOtherSpeedCfgDesc(uint16_t *length);
 static uint8_t *USBD_CUSTOM_HID_GetDeviceQualifierDesc(uint16_t *length);
+
+uint8_t get_message(void)
+{
+	return feature_test_OUT[1];
+}
+
 #endif /* USE_USBD_COMPOSITE  */
 /**
   * @}
@@ -354,9 +365,14 @@ static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
 {
   USBD_CUSTOM_HID_HandleTypeDef *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassDataCmsit[pdev->classId];
   uint16_t len = 0U;
+
+// Ifdefs in original code were removed to simplify feature report implementation
 #ifdef USBD_CUSTOMHID_CTRL_REQ_GET_REPORT_ENABLED
-  uint16_t ReportLength = 0U;
-#endif /* USBD_CUSTOMHID_CTRL_REQ_GET_REPORT_ENABLED */
+#warning "USBD_CUSTOMHID_CTRL_REQ_GET_REPORT_ENABLED not implemented; See original library code"
+#endif
+#ifdef USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED
+#warning "USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED not implemented; See original library code"
+#endif
   uint8_t  *pbuf = NULL;
   uint16_t status_info = 0U;
   USBD_StatusTypeDef ret = USBD_OK;
@@ -388,60 +404,22 @@ static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
           break;
 
         case CUSTOM_HID_REQ_SET_REPORT:
-#ifdef USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED
-          if (((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData[pdev->classId])->CtrlReqComplete != NULL)
-          {
-            /* Let the application decide when to enable EP0 to receive the next report */
-            ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData[pdev->classId])->CtrlReqComplete(req->bRequest,
-                                                                                            req->wLength);
-          }
-#endif /* USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED */
 #ifndef USBD_CUSTOMHID_EP0_OUT_PREPARE_RECEIVE_DISABLED
           hhid->IsReportAvailable = 1U;
           (void)USBD_CtlPrepareRx(pdev, hhid->Report_buf,
                                   MIN(req->wLength, USBD_CUSTOMHID_OUTREPORT_BUF_SIZE));
 #endif /* USBD_CUSTOMHID_EP0_OUT_PREPARE_RECEIVE_DISABLED */
           break;
-#ifdef USBD_CUSTOMHID_CTRL_REQ_GET_REPORT_ENABLED
+
+        /*
+         * Feature Report IN
+         */
         case CUSTOM_HID_REQ_GET_REPORT:
-          if (((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData[pdev->classId])->GetReport != NULL)
-          {
-            ReportLength = req->wLength;
-
-            /* Get report data buffer */
-            pbuf = ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData[pdev->classId])->GetReport(&ReportLength);
-          }
-
-          if ((pbuf != NULL) && (ReportLength != 0U))
-          {
-            len = MIN(ReportLength, req->wLength);
-
-            /* Send the report data over EP0 */
-            (void)USBD_CtlSendData(pdev, pbuf, len);
-          }
-          else
-          {
-#ifdef USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED
-            if (((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData[pdev->classId])->CtrlReqComplete != NULL)
-            {
-              /* Let the application decide what to do, keep EP0 data phase in NAK state and
-                 use USBD_CtlSendData() when data become available or stall the EP0 data phase */
-              ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData[pdev->classId])->CtrlReqComplete(req->bRequest,
-                                                                                              req->wLength);
-            }
-            else
-            {
-              /* Stall EP0 if no data available */
-              USBD_CtlError(pdev, req);
-            }
-#else
-            /* Stall EP0 if no data available */
-            USBD_CtlError(pdev, req);
-#endif /* USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED */
-          }
-          break;
-#endif /* USBD_CUSTOMHID_CTRL_REQ_GET_REPORT_ENABLED */
-
+        	if (req->wValue == (FEATURE_REPORT_WVALUE_OFFSET + REPORTID_FEATURE_TEST))
+        	{
+        		USBD_CtlSendData(pdev, (uint8_t*)&feature_test_IN, sizeof (feature_test_IN));
+        	}
+        	break;
         default:
           USBD_CtlError(pdev, req);
           ret = USBD_FAIL;
@@ -800,4 +778,3 @@ uint8_t USBD_CUSTOM_HID_RegisterInterface(USBD_HandleTypeDef *pdev,
 /**
   * @}
   */
-
