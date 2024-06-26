@@ -1,2 +1,8 @@
-../USB_DEVICE/App/usb_device.c:88:6:input_test	24	static
-../USB_DEVICE/App/usb_device.c:102:6:MX_USB_DEVICE_Init	8	static
+../USB_DEVICE/App/usb_device.c:90:6:tp_clear	16	static
+../USB_DEVICE/App/usb_device.c:98:6:tp_set_contact	16	static
+../USB_DEVICE/App/usb_device.c:107:6:tp_reset_contact	16	static
+../USB_DEVICE/App/usb_device.c:112:6:tp_set_reset_buttons	16	static
+../USB_DEVICE/App/usb_device.c:119:6:tp_update	24	static
+../USB_DEVICE/App/usb_device.c:146:6:tp_send_touchpad_report	56	static
+../USB_DEVICE/App/usb_device.c:179:6:tp_send_mouse_report	32	static
+../USB_DEVICE/App/usb_device.c:195:6:MX_USB_DEVICE_Init	8	static

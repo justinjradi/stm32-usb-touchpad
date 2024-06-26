@@ -53,7 +53,8 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void move(uint16_t xi, uint16_t yi, uint16_t dx, uint16_t dy, uint16_t dt, int n_tot);
+void rclick(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

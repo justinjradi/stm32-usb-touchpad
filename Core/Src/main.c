@@ -110,9 +110,10 @@ int main(void)
 				HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET);
 				user_button_pressed = 0;
 
-				input_test();
-
-				HAL_Delay(250);
+				move(2000, 2000, 20, 0, 1, 100);
+				HAL_Delay(200);
+				rclick();
+				HAL_Delay(200);
 			}
 
     /* USER CODE END WHILE */
@@ -206,7 +207,26 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void move(uint16_t xi, uint16_t yi, uint16_t dx, uint16_t dy, uint16_t dt, int n_tot)
+{
+	int yj = yi + 1000;
+	for (int n = 0; n <= n_tot; n++)
+	{
+		tp_set_contact(0, xi+dx*n, yi+dy*n);
+		tp_set_contact(1, xi+dx*n, yj+dy*n);
+		tp_update(HAL_GetTick());
+		HAL_Delay(dt);
+	}
+}
 
+void rclick(void)
+{
+	tp_set_reset_buttons(2, 0, 1);
+	tp_update(HAL_GetTick());
+	HAL_Delay(2);
+	tp_set_reset_buttons(2, 0, 0);
+	tp_update(HAL_GetTick());
+}
 /* USER CODE END 4 */
 
 /**

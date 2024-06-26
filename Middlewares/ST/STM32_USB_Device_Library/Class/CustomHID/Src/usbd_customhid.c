@@ -68,13 +68,7 @@ typedef struct __attribute__((packed))
 	uint8_t pad_type:4;
 } CapabilitiesReport;
 
-typedef struct __attribute__((packed))
-{
-	uint8_t report_ID;
-	uint8_t	certification_blob[257];
-} CertificationStatusReport;
-
-const uint8_t certification_blob[257] = {
+const uint8_t certification_status_report[257] = { REPORTID_CERTIFICATION_STATUS,
 		0xfc, 0x28, 0xfe, 0x84, 0x40, 0xcb, 0x9a, 0x87, 0x0d, 0xbe, 0x57, 0x3c, 0xb6, 0x70, 0x09, 0x88, 0x07,
 		0x97, 0x2d, 0x2b, 0xe3, 0x38, 0x34, 0xb6, 0x6c, 0xed, 0xb0, 0xf7, 0xe5, 0x9c, 0xf6, 0xc2, 0x2e, 0x84,
 		0x1b, 0xe8, 0xb4, 0x51, 0x78, 0x43, 0x1f, 0x28, 0x4b, 0x7c, 0x2d, 0x53, 0xaf, 0xfc, 0x47, 0x70, 0x1b,
@@ -436,20 +430,18 @@ static uint8_t USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
         /*
          * Send feature reports to host
          */
-        const int FEATURE_REPORT_WVALUE_OFFSET = 0x300;		// High Byte of wValue is report type, Low Byte is report ID (HID 1.11, Section 7.2)
         case CUSTOM_HID_REQ_GET_REPORT:
+        int FEATURE_REPORT_WVALUE_OFFSET = 0x300;		// High Byte of wValue is report type, Low Byte is report ID (HID 1.11, Section 7.2)
         	if (req->wValue == (FEATURE_REPORT_WVALUE_OFFSET + REPORTID_CAPABILITIES))
         	{
-        		CapabilitiesReport report;
-        		report.report_ID = REPORTID_CAPABILITIES;
-        		report.contact_count_maximum = TP_MAX_CONTACTS;
-        		USBD_CtlSendData(pdev, (uint8_t*)&report, sizeof (report));
+        		CapabilitiesReport capabilitiesReport;
+        		capabilitiesReport.report_ID = REPORTID_CAPABILITIES;
+        		capabilitiesReport.contact_count_maximum = TP_MAX_CONTACTS;
+        		capabilitiesReport.pad_type = TP_PAD_TYPE;
+        		USBD_CtlSendData(pdev, (uint8_t*)&capabilitiesReport, sizeof (CapabilitiesReport));
         	}
         	else if (req->wValue == (FEATURE_REPORT_WVALUE_OFFSET + REPORTID_CERTIFICATION_STATUS)){
-        		CertificationStatusReport report;
-        		report.report_ID = REPORTID_CERTIFICATION_STATUS;
-        		memcpy(&report.certification_blob, &certification_blob, sizeof(certification_blob));
-        		USBD_CtlSendData(pdev, (uint8_t*)&report, sizeof (report));
+        		USBD_CtlSendData(pdev, (uint8_t*)&certification_status_report, sizeof (certification_status_report));
         	}
         	break;
         default:

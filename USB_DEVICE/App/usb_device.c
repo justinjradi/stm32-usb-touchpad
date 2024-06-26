@@ -48,22 +48,24 @@ typedef struct __attribute__((packed))
 	Contact reported_contacts[TP_MAX_CONTACTS];
 	uint16_t scan_time;
 	uint8_t contact_count;
-	uint8_t button_1 : 1;
-	uint8_t button_2 : 1;
-	uint8_t button_3 : 1;
+	uint8_t left_click : 1;
+	uint8_t middle_click : 1;
+	uint8_t right_click : 1;
 	uint8_t padding : 5;
 } TouchpadReport;		// 10 bytes
 
 typedef struct __attribute__((packed))
 {
 	uint8_t report_ID;
-	uint8_t button_1 : 1;
-	uint8_t button_2 : 1;
+	uint8_t left_click : 1;
+	uint8_t right_click : 1;
 	uint8_t padding : 6;
 	uint16_t x;
 	uint16_t y;
 } MouseReport;	// 4 bytes
 
+Contact contacts_by_ID[TP_MAX_CONTACTS];
+uint8_t button_states[3];
 /* USER CODE END PV */
 
 /* USER CODE BEGIN PFP */
@@ -85,12 +87,103 @@ USBD_HandleTypeDef hUsbDeviceFS;
  * -- Insert your external function declaration here --
  */
 /* USER CODE BEGIN 1 */
-void input_test(void)
+void tp_clear(void)
 {
-	TouchpadReport touchpadReport = {0};
-	touchpadReport.report_ID = REPORTID_TOUCHPAD;
-	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *) &touchpadReport, sizeof (touchpadReport));
-	printf("");
+	for (int id = 0; id < TP_MAX_CONTACTS; id++)
+	{
+		memset(&contacts_by_ID[id], 0, sizeof (Contact));
+	}
+}
+
+void tp_set_contact(uint8_t contact_ID, uint16_t x, uint16_t y)
+{
+	contacts_by_ID[contact_ID].confidence = 1;
+	contacts_by_ID[contact_ID].tip_switch = 1;
+	contacts_by_ID[contact_ID].contact_ID = contact_ID;
+	contacts_by_ID[contact_ID].x = x;
+	contacts_by_ID[contact_ID].y = y;
+}
+
+void tp_reset_contact(uint8_t contact_ID)
+{
+	contacts_by_ID[contact_ID].tip_switch = 0;
+}
+
+void tp_set_reset_buttons(uint8_t left_click, uint8_t middle_click, uint8_t right_click)
+{
+	button_states[0] = left_click;
+	button_states[1] = middle_click;
+	button_states[2] = right_click;
+}
+
+void tp_update(int scan_time_ms)
+{
+	TouchpadConfiguration tc = get_touchpad_configuration();
+	if (tc.input_mode == TP_INPUT_MODE_TOUCHPAD)
+	{
+		tp_send_touchpad_report(scan_time_ms);
+	}
+	else	// input mode = mouse
+	{
+//		for (int id = 0; id < TP_MAX_CONTACTS; id++)
+//		{
+//			if (contacts_by_ID[id].tip_switch)	// Send report for first set contact
+//			{
+//				// TODO CONVERT UNITS
+//				uint16_t x = contacts_by_ID[id].x;
+//				uint16_t x = contacts_by_ID[id].y;
+//				uint8_t left_click  = button_states[0];
+//				uint8_t right_click = button_states[2];
+//				tp_send_mouse_report(x, y, left_click, right_click);
+//				return;
+//			}
+//		}
+		tp_send_mouse_report(0, 0, 0, 0);	// No contact is set, so send empty report
+	}
+}
+
+// Direct usage discouraged!
+void tp_send_touchpad_report(int scan_time_ms)
+{
+	TouchpadReport report;
+	report.report_ID = REPORTID_TOUCHPAD;
+	report.scan_time = (uint16_t) (scan_time_ms * 10);	// Convert 100μs units to 1ms units and let overflow wrap around
+	int count = 0;
+	TouchpadConfiguration tc = get_touchpad_configuration();
+	if (tc.surface_switch)	// Contacts are to be reported
+	{
+		for (int id = 0; id < TP_MAX_CONTACTS; id++)
+		{
+			if (contacts_by_ID[id].tip_switch)
+			{
+				report.reported_contacts[count] = contacts_by_ID[id];
+				count++;
+			}
+		}
+		for (int j = count; j < TP_MAX_CONTACTS; j++)
+		{
+			memset(&report.reported_contacts[j], 0, sizeof (Contact));
+		}
+	}
+	report.contact_count = count;
+	if (tc.button_switch)
+	{
+		report.left_click = button_states[0];
+		report.middle_click = button_states[1];
+		report.right_click = button_states[2];
+	}
+	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *) &report, sizeof (report));
+}
+
+// Direct usage discouraged!
+void tp_send_mouse_report(uint16_t x, uint16_t y, uint8_t left_click, uint8_t right_click)
+{
+	MouseReport report;
+	report.x = x;
+	report.y = y;
+	report.left_click = left_click;
+	report.right_click = right_click;
+	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *) &report, sizeof (report));
 }
 
 /* USER CODE END 1 */

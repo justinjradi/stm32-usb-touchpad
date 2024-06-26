@@ -1,4 +1,4 @@
-../USB_DEVICE/App/usbd_custom_hid_if.c:280:15:CUSTOM_HID_Init_FS	1
-../USB_DEVICE/App/usbd_custom_hid_if.c:291:15:CUSTOM_HID_DeInit_FS	1
-../USB_DEVICE/App/usbd_custom_hid_if.c:304:15:CUSTOM_HID_OutEvent_FS	4
-../USB_DEVICE/App/usbd_custom_hid_if.c:349:23:get_touchpad_configuration	1
+../USB_DEVICE/App/usbd_custom_hid_if.c:350:15:CUSTOM_HID_Init_FS	1
+../USB_DEVICE/App/usbd_custom_hid_if.c:361:15:CUSTOM_HID_DeInit_FS	1
+../USB_DEVICE/App/usbd_custom_hid_if.c:374:15:CUSTOM_HID_OutEvent_FS	4
+../USB_DEVICE/App/usbd_custom_hid_if.c:419:23:get_touchpad_configuration	1

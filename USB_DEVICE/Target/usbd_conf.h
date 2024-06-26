@@ -35,22 +35,29 @@
 #include "stm32f4xx_hal.h"
 
 /* USER CODE BEGIN INCLUDE */
+
+// Endpoint Parameters
 #define CUSTOM_HID_EPIN_ADDR                         0x81U
 #define CUSTOM_HID_EPIN_SIZE                         10U			// IN endpoint size
 #define CUSTOM_HID_EPOUT_ADDR                        0x01U
 #define CUSTOM_HID_EPOUT_SIZE                        2U			// OUT endpoint size
-
-
+// Touchpad Collection
 #define REPORTID_TOUCHPAD															1				// Input
+#define TP_LOG_WIDTH																	1920
+#define TP_LOG_HEIGHT																	1080
+#define TP_PHYS_WIDTH																	1920
+#define TP_PHYS_HEIGHT																1080
 #define REPORTID_CAPABILITIES													2				// Feature (Get)
+#define TP_MAX_CONTACTS																3
+#define TP_PAD_TYPE																		0				// 0 = clickable, 1 = pressure pad, 2 = non-clickable
 #define REPORTID_CERTIFICATION_STATUS									3				// Feature (Get)
+// Configuration Collection
 #define REPORTID_INPUT_MODE														4				// Feature (Set)
 #define REPORTID_FUNCTION_SWITCH											5				// Feature (Set)
+#define TP_INPUT_MODE_MOUSE														0
+#define TP_INPUT_MODE_TOUCHPAD												3
+// Mouse Collection
 #define REPORTID_MOUSE																6				// Input
-
-#define TP_MAX_CONTACTS																1
-#define TP_PAD_TYPE																		2				// 0 = clickable, 1 = pressure pad, 2 = non-clickable
-
 
 typedef struct
 {
@@ -99,7 +106,7 @@ typedef struct
 /*---------- -----------*/
 #define USBD_CUSTOMHID_OUTREPORT_BUF_SIZE     2U
 /*---------- -----------*/
-#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     260U
+#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     398U
 /*---------- -----------*/
 #define CUSTOM_HID_FS_BINTERVAL     5U
 
