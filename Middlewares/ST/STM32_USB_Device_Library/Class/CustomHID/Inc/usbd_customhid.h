@@ -105,7 +105,7 @@ typedef struct _USBD_CUSTOM_HID_Itf
   uint8_t *pReport;
   int8_t (* Init)(void);
   int8_t (* DeInit)(void);
-  int8_t (* OutEvent)(uint8_t event_idx, uint8_t state);
+  int8_t (* OutEvent)(uint8_t report_ID, uint8_t data);
 #ifdef USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED
   int8_t (* CtrlReqComplete)(uint8_t request, uint16_t wLength);
 #endif /* USBD_CUSTOMHID_CTRL_REQ_COMPLETE_CALLBACK_ENABLED */
@@ -179,8 +179,6 @@ uint8_t USBD_CUSTOM_HID_ReceivePacket(USBD_HandleTypeDef *pdev);
 
 uint8_t USBD_CUSTOM_HID_RegisterInterface(USBD_HandleTypeDef *pdev,
                                           USBD_CUSTOM_HID_ItfTypeDef *fops);
-
-uint8_t get_message(void);
 
 /**
   * @}

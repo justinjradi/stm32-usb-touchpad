@@ -34,14 +34,36 @@
 /* Private variables ---------------------------------------------------------*/
 typedef struct __attribute__((packed))
 {
+	uint8_t confidence:1;
+	uint8_t tip_switch:1;
+	uint8_t contact_ID:2;
+	uint8_t padding:4;
+	uint16_t x;
+	uint16_t y;
+} Contact;	// 5 bytes
+
+typedef struct __attribute__((packed))
+{
 	uint8_t report_ID;
-	uint8_t left_button : 1;
-	uint8_t middle_button : 1;
-	uint8_t right_button : 1;
+	Contact reported_contacts[TP_MAX_CONTACTS];
+	uint16_t scan_time;
+	uint8_t contact_count;
+	uint8_t button_1 : 1;
+	uint8_t button_2 : 1;
+	uint8_t button_3 : 1;
 	uint8_t padding : 5;
-	uint8_t x;
-	uint8_t y;
-} MouseReport;
+} TouchpadReport;		// 10 bytes
+
+typedef struct __attribute__((packed))
+{
+	uint8_t report_ID;
+	uint8_t button_1 : 1;
+	uint8_t button_2 : 1;
+	uint8_t padding : 6;
+	uint16_t x;
+	uint16_t y;
+} MouseReport;	// 4 bytes
+
 /* USER CODE END PV */
 
 /* USER CODE BEGIN PFP */
@@ -65,9 +87,10 @@ USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE BEGIN 1 */
 void input_test(void)
 {
-	MouseReport mouseReport = {0};
-	mouseReport.report_ID = 1;
-	int result = USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *) &mouseReport, sizeof (mouseReport));
+	TouchpadReport touchpadReport = {0};
+	touchpadReport.report_ID = REPORTID_TOUCHPAD;
+	USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t *) &touchpadReport, sizeof (touchpadReport));
+	printf("");
 }
 
 /* USER CODE END 1 */

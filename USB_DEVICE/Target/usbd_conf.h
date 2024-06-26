@@ -36,9 +36,28 @@
 
 /* USER CODE BEGIN INCLUDE */
 #define CUSTOM_HID_EPIN_ADDR                         0x81U
-#define CUSTOM_HID_EPIN_SIZE                         32U		// IN endpoint size
+#define CUSTOM_HID_EPIN_SIZE                         10U			// IN endpoint size
 #define CUSTOM_HID_EPOUT_ADDR                        0x01U
-#define CUSTOM_HID_EPOUT_SIZE                        2U		// OUT endpoint size
+#define CUSTOM_HID_EPOUT_SIZE                        2U			// OUT endpoint size
+
+
+#define REPORTID_TOUCHPAD															1				// Input
+#define REPORTID_CAPABILITIES													2				// Feature (Get)
+#define REPORTID_CERTIFICATION_STATUS									3				// Feature (Get)
+#define REPORTID_INPUT_MODE														4				// Feature (Set)
+#define REPORTID_FUNCTION_SWITCH											5				// Feature (Set)
+#define REPORTID_MOUSE																6				// Input
+
+#define TP_MAX_CONTACTS																1
+#define TP_PAD_TYPE																		2				// 0 = clickable, 1 = pressure pad, 2 = non-clickable
+
+
+typedef struct
+{
+	uint8_t input_mode;
+	uint8_t surface_switch;
+	uint8_t button_switch;
+} TouchpadConfiguration;
 /* USER CODE END INCLUDE */
 
 /** @addtogroup USBD_OTG_DRIVER
@@ -80,7 +99,7 @@
 /*---------- -----------*/
 #define USBD_CUSTOMHID_OUTREPORT_BUF_SIZE     2U
 /*---------- -----------*/
-#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     67U
+#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     260U
 /*---------- -----------*/
 #define CUSTOM_HID_FS_BINTERVAL     5U
 

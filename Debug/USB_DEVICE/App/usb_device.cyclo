@@ -1,2 +1,2 @@
-../USB_DEVICE/App/usb_device.c:66:6:input_test	1
-../USB_DEVICE/App/usb_device.c:79:6:MX_USB_DEVICE_Init	5
+../USB_DEVICE/App/usb_device.c:88:6:input_test	1
+../USB_DEVICE/App/usb_device.c:102:6:MX_USB_DEVICE_Init	5
