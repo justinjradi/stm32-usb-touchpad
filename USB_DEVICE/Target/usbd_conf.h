@@ -38,7 +38,7 @@
 
 // Endpoint Parameters
 #define CUSTOM_HID_EPIN_ADDR                         0x81U
-#define CUSTOM_HID_EPIN_SIZE                         10U			// IN endpoint size
+#define CUSTOM_HID_EPIN_SIZE                         30U			// IN endpoint size
 #define CUSTOM_HID_EPOUT_ADDR                        0x01U
 #define CUSTOM_HID_EPOUT_SIZE                        2U			// OUT endpoint size
 // Touchpad Collection
@@ -48,7 +48,7 @@
 #define TP_PHYS_WIDTH																	1920
 #define TP_PHYS_HEIGHT																1080
 #define REPORTID_CAPABILITIES													2				// Feature (Get)
-#define TP_MAX_CONTACTS																3
+#define TP_MAX_CONTACTS																5
 #define TP_PAD_TYPE																		0				// 0 = clickable, 1 = pressure pad, 2 = non-clickable
 #define REPORTID_CERTIFICATION_STATUS									3				// Feature (Get)
 // Configuration Collection
@@ -106,7 +106,7 @@ typedef struct
 /*---------- -----------*/
 #define USBD_CUSTOMHID_OUTREPORT_BUF_SIZE     2U
 /*---------- -----------*/
-#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     398U
+#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     534U
 /*---------- -----------*/
 #define CUSTOM_HID_FS_BINTERVAL     5U
 

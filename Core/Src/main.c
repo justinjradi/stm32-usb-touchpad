@@ -50,7 +50,7 @@
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
-extern TouchpadConfiguration get_touchpad_configuration(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -90,14 +90,12 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   int user_button_pressed;
-  TouchpadConfiguration touchpadConfiguration;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  	touchpadConfiguration = get_touchpad_configuration();
 
 			if (HAL_GPIO_ReadPin(USER_BUTTON_GPIO_Port, USER_BUTTON_Pin))
 			{
@@ -212,8 +210,8 @@ void move(uint16_t xi, uint16_t yi, uint16_t dx, uint16_t dy, uint16_t dt, int n
 	int yj = yi + 1000;
 	for (int n = 0; n <= n_tot; n++)
 	{
-		tp_set_contact(0, xi+dx*n, yi+dy*n);
-		tp_set_contact(1, xi+dx*n, yj+dy*n);
+		tp_set_contact(3, xi+dx*n, yi+dy*n);
+		tp_set_contact(4, xi+dx*n, yj+dy*n);
 		tp_update(HAL_GetTick());
 		HAL_Delay(dt);
 	}

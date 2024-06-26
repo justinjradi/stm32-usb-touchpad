@@ -36,8 +36,8 @@ typedef struct __attribute__((packed))
 {
 	uint8_t confidence:1;
 	uint8_t tip_switch:1;
-	uint8_t contact_ID:2;
-	uint8_t padding:4;
+	uint8_t contact_ID:4;
+	uint8_t padding:2;
 	uint16_t x;
 	uint16_t y;
 } Contact;	// 5 bytes
@@ -52,7 +52,7 @@ typedef struct __attribute__((packed))
 	uint8_t middle_click : 1;
 	uint8_t right_click : 1;
 	uint8_t padding : 5;
-} TouchpadReport;		// 10 bytes
+} TouchpadReport;		// 5 + 5*5 = 30 bytes
 
 typedef struct __attribute__((packed))
 {
