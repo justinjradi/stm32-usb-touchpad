@@ -61,7 +61,7 @@ void tp_set_contact(uint8_t contact_ID, uint16_t x, uint16_t y);
 void tp_reset_contact(uint8_t contact_ID);
 void tp_set_reset_buttons(uint8_t left_click, uint8_t middle_click, uint8_t right_click);
 void tp_update(int scan_time_ms);
-void tp_send_touchpad_report(int scan_time_ms);
+void tp_send_touchpad_report(uint16_t scan_time);
 void tp_send_mouse_report(uint16_t x, uint16_t y, uint8_t left_click, uint8_t right_click);
 /* USER CODE END PFP */
 

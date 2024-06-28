@@ -96,7 +96,22 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
-  int user_button_pressed;
+  tp_clear();
+  HAL_TIM_Base_Start(&htim10);
+  int x0_i = 1847;
+  int y0_i = 3947;
+  int x1_i = 2247;
+  int y1_i = 2047;
+  int x0 = x0_i;
+  int y0 = y0_i;
+  int x1 = x1_i;
+  int y1 = y1_i;
+  int dx = 0;
+  int dy = 0;
+
+  int PANNING_DELAY = 1;
+  int t = 0;
+  int contact_set = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,21 +121,36 @@ int main(void)
 
 			if (HAL_GPIO_ReadPin(USER_BUTTON_GPIO_Port, USER_BUTTON_Pin))
 			{
-				user_button_pressed = 1;
-			}
-			else if (user_button_pressed)
-			{
 				HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_SET);
-				HAL_Delay(250);
+				dy = -1;
+			}
+			else
+			{
 				HAL_GPIO_WritePin(USER_LED_GPIO_Port, USER_LED_Pin, GPIO_PIN_RESET);
-				user_button_pressed = 0;
-
-				move(2000, 2000, 20, 0, 1, 100);
-				HAL_Delay(200);
-				rclick();
-				HAL_Delay(200);
+				dy = 0;
+				tp_clear();
+				tp_send_touchpad_report(get_time_100us());
+				while (!HAL_GPIO_ReadPin(USER_BUTTON_GPIO_Port, USER_BUTTON_Pin));		// Wait until pressed again
 			}
 
+			x0 += dx;
+			y0 += dy;
+			x1 += dx;
+			y1 += dy;
+			if ((x0 < 0) || (y0 < 0) || (x1 < 0) || (y1 < 0) ||(x0 > TP_LOG_WIDTH) || (y0 > TP_LOG_HEIGHT) || (x1 > TP_LOG_WIDTH) || (y1 > TP_LOG_HEIGHT))
+			{
+				x0 = x0_i;
+				y0 = y0_i;
+				x1 = x1_i;
+				y1 = y1_i;
+				tp_reset_contact(0 + 2*contact_set);
+//				tp_reset_contact(1 + 2*contact_set);
+				contact_set ^= 1;
+			}
+			tp_set_contact(0 + 2*contact_set, x0, y0);
+//			tp_set_contact(1 + 2*contact_set, x1, y1);
+			tp_send_touchpad_report(t);
+			delay_100us(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -295,16 +325,31 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+uint16_t get_time_100us(void)
+{
+	return __HAL_TIM_GET_COUNTER(&htim10) / 100;
+}
+
+// 655 max
+void delay_100us(uint16_t delay)
+{
+	int t_0 = __HAL_TIM_GET_COUNTER(&htim10);
+	while (__HAL_TIM_GET_COUNTER(&htim10) - t_0 < delay * 100);
+}
+
 void move(uint16_t xi, uint16_t yi, uint16_t dx, uint16_t dy, uint16_t dt, int n_tot)
 {
 	int yj = yi + 1000;
 	for (int n = 0; n <= n_tot; n++)
 	{
 		tp_set_contact(3, xi+dx*n, yi+dy*n);
-		tp_set_contact(4, xi+dx*n, yj+dy*n);
-		tp_update(HAL_GetTick());
-		HAL_Delay(dt);
+//		tp_set_contact(4, xi+dx*n, yj+dy*n);
+		delay_100us(dt);
+		tp_send_touchpad_report(get_time_100us());
 	}
+	tp_clear();
+	tp_send_touchpad_report(get_time_100us());
 }
 
 void rclick(void)

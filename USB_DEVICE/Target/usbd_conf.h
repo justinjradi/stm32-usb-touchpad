@@ -43,10 +43,10 @@
 #define CUSTOM_HID_EPOUT_SIZE                        2U			// OUT endpoint size
 // Touchpad Collection
 #define REPORTID_TOUCHPAD															1				// Input
-#define TP_LOG_WIDTH																	1920
-#define TP_LOG_HEIGHT																	1080
-#define TP_PHYS_WIDTH																	1920
-#define TP_PHYS_HEIGHT																1080
+#define TP_LOG_WIDTH																	4095
+#define TP_LOG_HEIGHT																	4095
+//#define TP_PHYS_WIDTH																	1920
+//#define TP_PHYS_HEIGHT																1080
 #define REPORTID_CAPABILITIES													2				// Feature (Get)
 #define TP_MAX_CONTACTS																5
 #define TP_PAD_TYPE																		0				// 0 = clickable, 1 = pressure pad, 2 = non-clickable

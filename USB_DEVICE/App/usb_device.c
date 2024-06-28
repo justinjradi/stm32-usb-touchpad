@@ -143,11 +143,11 @@ void tp_update(int scan_time_ms)
 }
 
 // Direct usage discouraged!
-void tp_send_touchpad_report(int scan_time_ms)
+void tp_send_touchpad_report(uint16_t scan_time)	// in 100μs units
 {
 	TouchpadReport report;
 	report.report_ID = REPORTID_TOUCHPAD;
-	report.scan_time = (uint16_t) (scan_time_ms * 10);	// Convert 100μs units to 1ms units and let overflow wrap around
+	report.scan_time = scan_time;
 	int count = 0;
 	TouchpadConfiguration tc = get_touchpad_configuration();
 	if (tc.surface_switch)	// Contacts are to be reported
